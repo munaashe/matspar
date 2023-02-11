@@ -2,14 +2,31 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import Search from '@/assets/images/Search.svg';
-import { useState, useEffect, ReactElement } from 'react';
+import { useState, useEffect } from 'react';
 
+import joker from '@/assets/images/joker.jpg';
 
-
-const Home = () =>  {
+const Home = () => {
   const [searchQuery, setSearchQuery] = useState('cocacola');
-  const [searchData, setSearchData]= useState([]);
+  const [searchData, setSearchData] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+
+  var myHeaders = new Headers();
+  myHeaders.append('content-type', 'application/json');
+
+  var raw = JSON.stringify({
+    slug: '/kategori',
+    query: {
+      q: `${searchQuery}`,
+    },
+  });
+
+  var requestOptions: RequestInit = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'manual',
+  };
 
   var requestSuggestionsOptions: RequestInit = {
     method: 'GET',
@@ -17,31 +34,18 @@ const Home = () =>  {
   };
 
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      const response = await fetch(
-        `https://cors-anywhere.herokuapp.com/https://api.matspar.se/autocomplete?query=${searchQuery}`,
+    if (searchQuery) {
+      fetch(
+        `https://api.allorigins.win/raw?url=https://api.matspar.se/autocomplete?query=${searchQuery}`,
         requestSuggestionsOptions
-      );
-      const newData = await response.json();
-      setSuggestions(newData.suggestions);
-    };
-
-    fetchSuggestions();
+      )
+        .then((res) => res.json())
+        .then((data) => setSuggestions(data.suggestions));
+    }
   }, [searchQuery]);
 
   const handleSearch = () => {
-    fetch('https://cors-anywhere.herokuapp.com/https://api.matspar.se/slug', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        slug: '/kategori',
-        query: {
-          q: `${searchQuery}`,
-        },
-      }),
-    })
+    fetch('https://cors-anywhere.herokuapp.com/https://api.matspar.se/slug', requestOptions)
       .then((response) => response.json())
       .then((data) => {
         setSearchData(data.payload.products);
@@ -49,6 +53,11 @@ const Home = () =>  {
       .catch((error) => {
         console.log(error.message);
       });
+  };
+
+  const handleSuggestionClick = (item: string) => {
+    setSearchQuery(item);
+    handleSearch();
   };
 
   console.log(searchData);
@@ -63,37 +72,68 @@ const Home = () =>  {
       </Head>
       <>
         <nav className={styles.navbar}>
-          <div className={styles.box}>
-            <p className={styles.logoText}>MatSpar</p>
+          <div className={styles.wrapper}>
+            <div className={styles.box}>
+              <p className={styles.logoText}>MatSpar</p>
+            </div>
+            <div className={styles.search}>
+              <input
+                type="text"
+                className={styles.searchBar}
+                placeholder="search"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
+              <button className={styles.searchBtn} onClick={() => handleSearch()}>
+                <Image src={Search} alt="search" className={styles.img} />
+              </button>
+            </div>
+            <div className={styles.box}>Quick Link</div>
           </div>
-          <div className={styles.search}>
-            <input
-              type="text"
-              className={styles.searchBar}
-              placeholder="search"
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className={styles.searchBtn} onClick={() => handleSearch()}>
-              <Image src={Search} alt="search" className={styles.img} />
-            </button>
-            {suggestions.length > 0 ? (
-              <>
-                {suggestions.map((suggestion: any) => {
-                  <div>
-                    {suggestion.text} <Image src={Search} alt="search" className={styles.img} />
-                  </div>;
-                })}
-              </>
-            ) : null}
+          <div>
+            {suggestions?.map((suggestion: any) => (
+              <div
+                className={styles.suggestions}
+                key={suggestion.text}
+                onClick={() => handleSuggestionClick(suggestion.text)}
+              >
+                <p>{suggestion.text}</p>
+                <Image src={Search} alt="search" className={styles.img} />
+              </div>
+            ))}
+            <br />
           </div>
-          <div className={styles.box}>Quick Link</div>
         </nav>
-        <section className={styles.container}>
+
+        <section className={styles.body}>
           <div className={styles.gridContainer}>
             {searchData?.map((product: any) => (
               <div key={product.productid} className={styles.gridItem}>
-                {product.name}
+                <div className={styles.cardImage}>
+                  <Image
+                    src={
+                      product.image
+                        ? `https://d1ax460061ulao.cloudfront.net/140x150/${product.image[0]}/${product.image[1]}/${product.image}.jpg`
+                        : joker
+                    }
+                    alt={product.name}
+                    className={styles.imageProps}
+                    width="100"
+                    height="100"
+                  />
                 </div>
+
+                <div className={styles.cardDetails}>
+                  <h5>{product.name}</h5>
+                  <p>{product.weight_pretty}</p>
+                </div>
+                <h6>SEK {product.price}</h6>
+                <button>add</button>
+              </div>
             ))}
           </div>
         </section>
@@ -106,6 +146,6 @@ const Home = () =>  {
       </>
     </>
   );
-}
+};
 
-export default Home
+export default Home;

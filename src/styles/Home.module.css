@@ -1,6 +1,9 @@
 /*navbar*/
 .navbar {
   height: 60px;
+}
+
+.wrapper {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -15,9 +18,10 @@
   padding-left: 12px;
 }
 .search {
+  display: flex;
   justify-content: center;
   align-items: center;
-  flex: 2;
+  flex: 1;
 }
 .logoText {
   font: futura;
@@ -30,7 +34,7 @@
 .searchBar {
   display: inline-block;
   width: 400px;
-  height: 48px;
+  height: 40px;
   background: transparent;
   outline: none;
   font-size: 12pt;
@@ -53,11 +57,27 @@
 }
 
 .img {
-  height: 100%;
+  height: 30px;
+  bachground: #ffffff
 }
 
-.suggestion {
+.suggestions {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.suggestions p {
   display: inline-block;
+  width: 300px;
+  height: 40px;
+  background: #ffffff;
+  outline: none;
+  font-size: 12pt;
+  padding: 4px 28px 4px 4px;
+  vertical-align: middle;
 }
 
 /*footer*/
@@ -88,15 +108,19 @@
 
 .body {
   min-height: 80vh;
-  padding-top: 12px;
+  padding-top: 72px;
 }
 
-.container {
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  max-width: '800px';
-  margin: 0px auto;
+.code {
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(25%, auto));
+  width: var(--max-width);
+  max-width: 100%;
 }
 
 .gridContainer {
@@ -116,18 +140,60 @@
   font-size: 30px;
   text-align: center;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: #ffffff;
   border: none;
   border-radius: 8px;
+  height: 350px;
+}
+
+.gridItem button {
+  background-color: #17a030;
+  border: none;
+  width: 96px;
+  height: 32px;
+  border-radius: 20px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 2.1rem;
+}
+
+.gridItem h5 {
+  font-size: 20px;
+  font-weight: 550;
+}
+
+.gridItem h6 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9761c;
+  padding-bottom: 12px;
+}
+
+.gridItem p {
+  font-size: 16px;
+}
+
+.cardImage {
+  height: 140px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.imageProps {
+  width: 100%;
+  height: 120px;
+}
+
+.cardDetails {
+  height: 96px;
+  padding-top: 8px;
 }
 
 .gridItem:hover {
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
-}
-
-.code {
-  font-weight: 700;
-  font-family: var(--font-mono);
 }
 
 .card {
@@ -158,27 +224,49 @@
 
 /* Tablet and Smaller Desktop */
 @media (min-width: 701px) and (max-width: 1120px) {
-  .grid {
-    grid-template-columns: repeat(2, 50%);
+  .gridContainer {
+    display: grid;
+    column-gap: 12px;
+    grid-template-columns: auto auto auto;
+    padding: 16px;
+    row-gap: 12px;
+    background-color: #f8f8f8;
+    margin-left: 150px;
+    margin-right: 150px;
   }
+  
 }
 
-@media (prefers-color-scheme: dark) {
-  .vercelLogo {
-    filter: invert(1);
+/* Mobile Devices */
+@media (max-width: 700px) {
+  .gridContainer {
+    display: grid;
+    column-gap: 12px;
+    grid-template-columns: auto auto;
+    padding: 16px;
+    row-gap: 12px;
+    background-color: #f8f8f8;
+    margin-left: 8px;
+    margin-right: 8px;
+  } 
+
+  .logoText {
+    display: none
+  }
+  .box {
+    display: none
   }
 
-  .logo,
-  .thirteen img {
-    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
+  .searchBar {
+    display: inline-block;
+    width: 320px;
+    height: 32px;
+    background: transparent;
+    outline: none;
+    font-size: 12pt;
+    vertical-align: middle;
+    padding-y: 4px;
+    border-radius: 8px;
+    border-color: #d3d3d3;
   }
 }
